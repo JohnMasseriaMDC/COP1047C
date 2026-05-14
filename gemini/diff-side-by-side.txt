@@ -1,0 +1,187 @@
+"""								"""
+-------------------------------------------------------		-------------------------------------------------------
+DNA Sequence Search						DNA Sequence Search
+-------------------------------------------------------		-------------------------------------------------------
+Author: Gabriel A. Diaz					      |	Author: Gemini
+Date: 2024-10-07					      |	Date: 2025-10-09
+Course: Introduction to Python Programming			Course: Introduction to Python Programming
+Assignment: DNA Sequence Search					Assignment: DNA Sequence Search
+-------------------------------------------------------		-------------------------------------------------------
+								
+Description:							Description:
+Reads known DNA sequences and their names from 'known_sequenc |	Reads known DNA sequences and names from one file, and unknow
+and searches for each unknown DNA sequence from 'unknown_sequ |	sequences from another. It then searches to see if each unkno
+within the known sequences. Prints the name of the containing |	sequence is contained within any of the known sequences, prin
+or 'NOT FOUND' for each unknown sequence.		      |	the results clearly.
+								
+-------------------------------------------------------		-------------------------------------------------------
+Input files:							Input files:
+								
+- known_sequences.txt						- known_sequences.txt
+- unknown_sequences.txt						- unknown_sequences.txt
+								
+Outputs:							Outputs:
+								
+Unknown sequence 'AGTCAGTCAG' found in 'Human'.			Unknown sequence 'AGTCAGTCAG' found in 'Human'.
+Unknown sequence 'GGTACCAGGTAC' NOT found in known sequence	Unknown sequence 'GGTACCAGGTAC' NOT found in known sequence
+								
+-------------------------------------------------------		-------------------------------------------------------
+Error Handling:							Error Handling:
+- Displays appropriate error message if any file does		- Displays appropriate error message if any file does
+  not exist							  not exist
+								
+-------------------------------------------------------		-------------------------------------------------------
+"""								"""
+import os						      <	
+								
+							      >	import sys
+								
+def read_known_sequences(filename):			      |	# --- File Handling Functions ---
+							      >	
+							      >	def read_known_sequences(filepath):
+    """								    """
+    Reads known DNA sequences and names from a file into two  |	    Reads known DNA sequences and their corresponding names f
+							      >	    
+							      >	    The file is expected to have one name and one sequence pe
+							      >	    separated by a space.
+								
+    Args:							    Args:
+        filename (str): The name of the file to read.	      |	        filepath (str): The path to the known_sequences.txt f
+								
+    Returns:							    Returns:
+        tuple: A tuple containing two lists (names, sequences |	        tuple: A tuple containing two parallel lists (names, 
+               if the file cannot be opened.		      |	               or (None, None) if the file cannot be read.
+    """								    """
+    known_names = []						    known_names = []
+    known_sequences = []					    known_sequences = []
+							      >	    
+    try:							    try:
+        with open(filename, 'r') as file:		      |	        with open(filepath, 'r') as file:
+            for line in file:					            for line in file:
+                # Strip leading/trailing whitespace and split |	                # Strip whitespace and split the line once by
+                parts = line.strip().split(' ', 1)		                parts = line.strip().split(' ', 1)
+                if len(parts) == 2:				                if len(parts) == 2:
+                    name, sequence = parts			                    name, sequence = parts
+                    known_names.append(name)		      |	                    known_names.append(name.strip())
+                    known_sequences.append(sequence)	      |	                    known_sequences.append(sequence.strip())
+                # Ignore lines that don't conform to the "Nam <	
+        return known_names, known_sequences			        return known_names, known_sequences
+    except FileNotFoundError:					    except FileNotFoundError:
+        print(f"Error: The input file '{filename}' was not fo |	        print(f"ERROR: Input file not found: {filepath}", fil
+        return None, None					        return None, None
+    except Exception as e:					    except Exception as e:
+        print(f"An unexpected error occurred while reading '{ |	        print(f"An error occurred while reading {filepath}: {
+        return None, None					        return None, None
+								
+							      |	def read_unknown_sequences(filepath):
+def read_unknown_sequences(filename):			      <	
+    """								    """
+    Reads unknown DNA sequences from a file into a list of st |	    Reads unknown DNA sequences from a file.
+								
+							      >	    The file is expected to have one DNA sequence per line.
+							      >	
+    Args:							    Args:
+        filename (str): The name of the file to read.	      |	        filepath (str): The path to the unknown_sequences.txt
+								
+    Returns:							    Returns:
+        list: A list of unknown DNA sequences or None if the  |	        list: A list of unknown DNA sequence strings, or None
+							      >	              cannot be read.
+    """								    """
+    unknown_sequences = []					    unknown_sequences = []
+							      >	    
+    try:							    try:
+        with open(filename, 'r') as file:		      |	        with open(filepath, 'r') as file:
+            for line in file:					            for line in file:
+                # Strip leading/trailing whitespace and ensur |	                # Strip whitespace, including the newline cha
+                sequence = line.strip()			      |	                unknown_sequences.append(line.strip())
+                if sequence:				      <	
+                    unknown_sequences.append(sequence)	      <	
+        return unknown_sequences				        return unknown_sequences
+    except FileNotFoundError:					    except FileNotFoundError:
+        print(f"Error: The input file '{filename}' was not fo |	        print(f"ERROR: Input file not found: {filepath}", fil
+        return None						        return None
+    except Exception as e:					    except Exception as e:
+        print(f"An unexpected error occurred while reading '{ |	        print(f"An error occurred while reading {filepath}: {
+        return None						        return None
+								
+							      >	# --- Core Search Logic ---
+								
+def search_dna_sequences(known_names, known_sequences, unknow	def search_dna_sequences(known_names, known_sequences, unknow
+    """								    """
+    Searches each unknown sequence within the known sequences |	    Searches for each unknown sequence within the known seque
+								
+							      >	    Prints the result for each unknown sequence (found or not
+							      >	
+    Args:							    Args:
+        known_names (list): List of names corresponding to kn |	        known_names (list): List of names for known sequences
+        known_sequences (list): List of known DNA sequence st	        known_sequences (list): List of known DNA sequence st
+        unknown_sequences (list): List of unknown DNA sequenc	        unknown_sequences (list): List of unknown DNA sequenc
+    """								    """
+    print("--- Search Results ---")			      |	    
+							      |	    print("\n--- DNA Sequence Search Results ---")
+    # Iterate through each unknown sequence		      |	    
+    for unknown_seq in unknown_sequences:			    for unknown_seq in unknown_sequences:
+        found_in = None					      |	        if not unknown_seq:
+							      |	            continue # Skip empty lines
+        # Iterate through the known sequences using their ind |	            
+        # We use zip to pair the name and sequence correctly. |	        found = False
+        for name, known_seq in zip(known_names, known_sequenc |	        
+							      |	        # Iterate through the known sequences using index for
+            # Check if the unknown sequence is a substring of |	        for i in range(len(known_sequences)):
+							      >	            known_name = known_names[i]
+							      >	            known_seq = known_sequences[i]
+							      >	            
+							      >	            # Substring search using the 'in' operator
+            if unknown_seq in known_seq:			            if unknown_seq in known_seq:
+                found_in = name				      |	                print(f"Unknown sequence '{unknown_seq}' foun
+                # Stop searching once a match is found for th |	                found = True
+                break					      |	                break # Stop searching known sequences once a
+							      >	        
+							      >	        if not found:
+							      >	            print(f"Unknown sequence '{unknown_seq}' NOT foun
+								
+        # Print the result based on whether a match was found |	# --- Main Program Execution ---
+        if found_in:					      <	
+            print(f"Unknown sequence '{unknown_seq}' found in <	
+        else:						      <	
+            print(f"Unknown sequence '{unknown_seq}' NOT foun <	
+								
+							      <	
+def main():							def main():
+    """								    """
+    Main function to orchestrate reading files and searching  |	    Main function to coordinate the reading, processing, and 
+    """								    """
+    KNOWN_FILE = 'known_sequences.txt'			      |	    KNOWN_FILE = "known_sequences.txt"
+    UNKNOWN_FILE = 'unknown_sequences.txt'		      |	    UNKNOWN_FILE = "unknown_sequences.txt"
+							      |	    
+    # 1. Read known sequences					    # 1. Read known sequences
+    known_names, known_sequences = read_known_sequences(KNOWN	    known_names, known_sequences = read_known_sequences(KNOWN
+							      |	    
+    # Check if reading was successful (i.e., files exist and  <	
+    if known_names is None:					    if known_names is None:
+        return  # Exit if known sequences file failed to load |	        return # Exit if file reading failed
+								
+    # 2. Read unknown sequences					    # 2. Read unknown sequences
+    unknown_sequences = read_unknown_sequences(UNKNOWN_FILE)	    unknown_sequences = read_unknown_sequences(UNKNOWN_FILE)
+							      |	    
+    if unknown_sequences is None:				    if unknown_sequences is None:
+        return  # Exit if unknown sequences file failed to lo |	        return # Exit if file reading failed
+							      |	        
+    # Ensure we have data to search			      <	
+    if not known_sequences:				      <	
+        print("Warning: No known sequences were loaded. Canno <	
+        return						      <	
+							      <	
+    if not unknown_sequences:				      <	
+        print("Warning: No unknown sequences were loaded. Not <	
+        return						      <	
+							      <	
+    # 3. Search and print results				    # 3. Search and print results
+    search_dna_sequences(known_names, known_sequences, unknow	    search_dna_sequences(known_names, known_sequences, unknow
+								
+							      <	
+if __name__ == "__main__":					if __name__ == "__main__":
+    # Ensure the script runs the main function when executed  |	    main()
+    main()
+\ No newline at end of file
+						      |	

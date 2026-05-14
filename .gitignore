@@ -1,0 +1,9 @@
+# Ignore the nested lecture-transcripts repository/folder
+lecture-transcripts/
+
+# Ignore linked learning and student submission folders
+LinkedInLearning/
+StudentSubmissions/
+
+# Ignore all Python bytecode cache directories
+__pycache__/
