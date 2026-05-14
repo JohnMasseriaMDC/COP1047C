@@ -4,6 +4,7 @@ lecture-transcripts/
 # Ignore linked learning and student submission folders
 LinkedInLearning/
 StudentSubmissions/
+manimations/
 
 # Ignore all Python bytecode cache directories
 __pycache__/
